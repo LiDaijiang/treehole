@@ -69,17 +69,18 @@ def main(event):
     if req.request.type == 0:
         rds.append(measure_key, "False")
         rds.append(talk_key, "False")
-        return outputJson("欢迎来到树洞，在这里您可以对我说测心情，或者说聊聊吧,聊天过程中可以跟我说,你觉得呢", False)
+        return outputJson("欢迎来到树洞，在这里您可以对我说测心情，说心事，或者听秘密", False)
     elif req.request.type == 1:
         if req.request.event_type == "leavemsg.finished":
             db_conn = MySQLdb.connect(host=db_host, port=int(db_port), user=db_user, passwd=db_passwd, db=db_name)
             cursor = db_conn.cursor()
             if hasattr(req.request.event_property, "msg_file_id"):
-                cursor.execute("insert into secret_record(`msg_file_id`,`xiaomi_id`,`session_id`) values();" % ())
+                msg_file_id = req.request.event_property.msg_file_id
+                cursor.execute("insert into secret_record(`msg_file_id`,`xiaomi_id`,`session_id`) values('%s', 0, '%s');" % (msg_file_id, session_id))
                 db_conn.commit()
                 cursor.close()
                 db_conn.close()
-                return outputJson("想听听小爱怎么想的吗，可以跟我说你觉得呢", False)
+                return outputJson("想听听小爱怎么想的，可以跟我说你觉得呢", False)
             else:
                 return recordUser("哎呀，小爱听到了，可是左耳朵刚进去，就从右耳朵出来了，我想再听一遍")
 
